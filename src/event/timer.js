@@ -16,7 +16,7 @@ var d3_timer_queueHead,
 // The timer will continue to fire until callback returns true.
 d3.timer = function(callback, delay, then) {
   delay = delay || 0;
-  then = d3_frame_time();
+  then = d3_timer_time();
 
   // Add the callback to the tail of the queue.
   var time = then + delay, timer = {c: callback, t: time, f: false, n: null, i: 0};
@@ -31,7 +31,7 @@ d3.timer = function(callback, delay, then) {
   }
 };
 
-function d3_frame_time() {
+function d3_timer_time() {
    return d3_timer_frameNo * d3_timer_frameRate;
 }
 
@@ -55,7 +55,7 @@ d3.timer.flush = function() {
 };
 
 function d3_timer_mark() {
-  var now = d3_frame_time();
+  var now = d3_timer_time();
   d3_timer_active = d3_timer_queueHead;
   while (d3_timer_active) {
     if (now >= d3_timer_active.t) {

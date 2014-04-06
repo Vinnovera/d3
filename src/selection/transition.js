@@ -6,7 +6,7 @@ d3_selectionPrototype.transition = function() {
       subgroups = [],
       subgroup,
       node,
-      transition = d3_transitionInherit || {time: d3_frame_time(), ease: d3_ease_cubicInOut, delay: 0, duration: 250};
+      transition = d3_transitionInherit || {time: d3_timer_time(), ease: d3_ease_cubicInOut, delay: 0, duration: 250};
 
   for (var j = -1, m = this.length; ++j < m;) {
     subgroups.push(subgroup = []);
