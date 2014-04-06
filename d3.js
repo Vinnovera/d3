@@ -961,7 +961,7 @@
   }
   d3_selectionPrototype.transition = function() {
     var id = d3_transitionInheritId || ++d3_transitionId, subgroups = [], subgroup, node, transition = d3_transitionInherit || {
-      time: Date.now(),
+      time: d3_frame_time(),
       ease: d3_ease_cubicInOut,
       delay: 0,
       duration: 250
@@ -2040,38 +2040,38 @@
       }
     }
   };
-  var d3_timer_queueHead, d3_timer_queueTail, d3_timer_interval, d3_timer_timeout, d3_timer_active, d3_timer_frame = d3_window[d3_vendorSymbol(d3_window, "requestAnimationFrame")] || function(callback) {
-    setTimeout(callback, 17);
+  var d3_timer_queueHead, d3_timer_queueTail, d3_timer_interval, d3_timer_active, d3_timer_frameNo = 0, d3_timer_frameRate = 1e3 / 30, d3_timer_frame = function(callback) {
+    setTimeout(callback, 0);
   };
   d3.timer = function(callback, delay, then) {
-    var n = arguments.length;
-    if (n < 2) delay = 0;
-    if (n < 3) then = Date.now();
+    delay = delay || 0;
+    then = d3_frame_time();
     var time = then + delay, timer = {
       c: callback,
       t: time,
       f: false,
-      n: null
+      n: null,
+      i: 0
     };
     if (d3_timer_queueTail) d3_timer_queueTail.n = timer; else d3_timer_queueHead = timer;
     d3_timer_queueTail = timer;
     if (!d3_timer_interval) {
-      d3_timer_timeout = clearTimeout(d3_timer_timeout);
       d3_timer_interval = 1;
       d3_timer_frame(d3_timer_step);
     }
   };
+  function d3_frame_time() {
+    return d3_timer_frameNo * d3_timer_frameRate;
+  }
   function d3_timer_step() {
-    var now = d3_timer_mark(), delay = d3_timer_sweep() - now;
-    if (delay > 24) {
-      if (isFinite(delay)) {
-        clearTimeout(d3_timer_timeout);
-        d3_timer_timeout = setTimeout(d3_timer_step, delay);
-      }
-      d3_timer_interval = 0;
-    } else {
+    d3.timer.flush();
+    d3_timer_frameNo++;
+    if (d3_timer_queueHead) {
       d3_timer_interval = 1;
       d3_timer_frame(d3_timer_step);
+    } else {
+      d3_timer_interval = 0;
+      d3_timer_frameNo = 0;
     }
   }
   d3.timer.flush = function() {
@@ -2079,10 +2079,13 @@
     d3_timer_sweep();
   };
   function d3_timer_mark() {
-    var now = Date.now();
+    var now = d3_frame_time();
     d3_timer_active = d3_timer_queueHead;
     while (d3_timer_active) {
-      if (now >= d3_timer_active.t) d3_timer_active.f = d3_timer_active.c(now - d3_timer_active.t);
+      if (now >= d3_timer_active.t) {
+        d3_timer_active.i++;
+        d3_timer_active.f = d3_timer_active.c(d3_timer_active.t + d3_timer_active.i * d3_timer_frameRate - d3_timer_active.t);
+      }
       d3_timer_active = d3_timer_active.n;
     }
     return now;
