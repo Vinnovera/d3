@@ -2057,8 +2057,8 @@
     d3_timer_queueTail = timer;
     if (!d3_timer_interval) {
       d3_timer_interval = 1;
-      d3_timer_frame(d3_timer_step);
       d3_timer_event.start(d3_timer_frameNo);
+      d3_timer_frame(d3_timer_step);
     }
   };
   d3.timer.frameRate = 1e3 / 60;
@@ -2071,12 +2071,12 @@
   function d3_timer_step() {
     d3.timer.flush();
     if (d3_timer_queueHead) {
+      d3_timer_event.frame(d3_timer_frameNo);
       d3_timer_interval = 1;
       d3_timer_frameNo++;
-      d3_timer_event.frame(d3_timer_frameNo);
       d3_timer_frame(d3_timer_step);
     } else {
-      d3_timer_event.end(d3_timer_frameNo);
+      d3_timer_event.end(--d3_timer_frameNo);
       d3_timer_interval = 0;
       d3_timer_frameNo = 0;
     }
