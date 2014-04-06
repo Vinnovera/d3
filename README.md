@@ -1,6 +1,6 @@
 # Frames based D3
 D3 is very well optimized at animating SVG. What D3 is less good at is speeding up och slowing down an existing animation.
-This originated from the need of a way to get each and every frame from D3 transitions in a controlled manner, but as fast as possible. This way it's possible to capture the individual frames at a given frame rate. E.g. with the help of [PhantomJS](http://phantomjs.org/) and [FFmpeg](http://www.ffmpeg.org/) to create an exported rasterized movie.
+This fork originated from the need of a way to get each and every frame from D3 transitions in a controlled manner, but as fast as possible. This way it's possible to capture the individual frames at a given frame rate. E.g. with the help of [PhantomJS](http://phantomjs.org/) and [FFmpeg](http://www.ffmpeg.org/) to create an exported rasterized movie.
 
 ### Options
 **Frame rate** - How many frames per seconds should be generated
